@@ -1,88 +1,37 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.Scanner;
+
+import FCController.*;
 
 public class Match {
     public static void main(String[] args) {
-        try {
-            String Find_Matchid = "https://public.api.nexon.com/openapi/fconline/v1.0/matches?matchtype=50&offset=0&limit=100&orderby=desc";
+        Scanner scanner1 = new Scanner(System.in);
 
-            URL Find_Matchid_URL = new URL(Find_Matchid);
-            HttpURLConnection connection_of_Find_Matchid = (HttpURLConnection) Find_Matchid_URL.openConnection();
-            connection_of_Find_Matchid.setRequestMethod("GET");
-            connection_of_Find_Matchid.setRequestProperty("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJYLUFwcC1SYXRlLUxpbWl0IjoiNTAwOjEwIiwiYWNjb3VudF9pZCI6IjE1NjA3OTAxOTEiLCJhdXRoX2lkIjoiMiIsImV4cCI6MTcwNDI2NzY4NiwiaWF0IjoxNjg4NzE1Njg2LCJuYmYiOjE2ODg3MTU2ODYsInNlcnZpY2VfaWQiOiI0MzAwMTE0ODEiLCJ0b2tlbl90eXBlIjoiQWNjZXNzVG9rZW4ifQ.kbqI0QMNJWZLNhwsKPUmsWn-jtkpiwIFyWt4E9kDM7E");
+        System.out.println("1 : 선수 정보 조회");
+        System.out.println("2 : 최근 경기 MatchID 조회");
+        System.out.println("0 : 종료");
+        System.out.println("원하는 데이터를 선택하세요. : ");
 
-            int responseCode_of_Matchid = connection_of_Find_Matchid.getResponseCode();
+        int user = scanner1.nextInt();
 
-            if (responseCode_of_Matchid == 200) {
-                BufferedReader reader_of_Matchid = new BufferedReader(new InputStreamReader(connection_of_Find_Matchid.getInputStream()));
-                String Match_ID;
-                StringBuilder response_of_Find_Matchid = new StringBuilder();
+        if (user == 1) {
+            getPlayerInfo();
+        } else if (user == 2) {
+            System.out.printf("최근 5경기의 MatchID입니다.");
+            getMatchId();
 
-                while ((Match_ID = reader_of_Matchid.readLine()) != null) {
-                    response_of_Find_Matchid.append(Match_ID);
-                }
+            Scanner scanner2 = new Scanner(System.in);
 
-                reader_of_Matchid.close();
-                connection_of_Find_Matchid.disconnect();
+            System.out.println("경기 세부 정보가 필요하시다면 원하는 경기의 MatchID를 입력해주세요. : ");
 
+            String matchDetails_want = scanner2.nextLine();
 
-                System.out.println("최근 10경기를 불러옵니다.");
+            // 여기서부터는 선형탐색으로 찾아서 입력한 MatchID와 일치하는게 있으면 세부 정보를 출력해주는 코드 필요
+            // getMatchDetails()
 
-                String Match_ID_response = response_of_Find_Matchid.toString();
-                String[] Match_ID_response_array = Match_ID_response.split(",");
-
-                if (Match_ID_response_array.length >= 11) {
-                    for (int i = 0; i < 11; i++) {
-                        System.out.println(i + ": " + Match_ID_response_array[i]);
-                    }
-                } else {
-                    System.out.println("데이터가 10개 미만입니다.");
-                }
-
-                System.out.println("가장 최근 경기 데이터를 불러옵니다.");
-
-                String Match_ID_processed = new String(Match_ID_response_array[10]);
-                Match_ID_processed = Match_ID_processed.substring(1, Match_ID_processed.length() - 1);
-
-
-                String MatchUrl = "https://public.api.nexon.com/openapi/fconline/v1.0/matches/" + Match_ID_processed;
-
-                URL Match_details_URL = new URL(MatchUrl);
-                HttpURLConnection connection_of_Match_details = (HttpURLConnection) Match_details_URL.openConnection();
-                connection_of_Match_details.setRequestMethod("GET");
-                connection_of_Match_details.setRequestProperty("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJYLUFwcC1SYXRlLUxpbWl0IjoiNTAwOjEwIiwiYWNjb3VudF9pZCI6IjE1NjA3OTAxOTEiLCJhdXRoX2lkIjoiMiIsImV4cCI6MTcwNDI2NzY4NiwiaWF0IjoxNjg4NzE1Njg2LCJuYmYiOjE2ODg3MTU2ODYsInNlcnZpY2VfaWQiOiI0MzAwMTE0ODEiLCJ0b2tlbl90eXBlIjoiQWNjZXNzVG9rZW4ifQ.kbqI0QMNJWZLNhwsKPUmsWn-jtkpiwIFyWt4E9kDM7E");
-                int responseCode_of_Match_details = connection_of_Match_details.getResponseCode();
-
-                if (responseCode_of_Match_details == 200) {
-                    BufferedReader reader_of_Match_details = new BufferedReader(new InputStreamReader(connection_of_Match_details.getInputStream()));
-                    String Match_detail;
-                    StringBuilder response_of_Match_detail = new StringBuilder();
-
-                    while ((Match_detail = reader_of_Match_details.readLine()) != null) {
-                        response_of_Match_detail.append(Match_detail);
-                    }
-
-                    System.out.println(response_of_Match_detail);
-
-
-                    reader_of_Match_details.close();
-                    connection_of_Match_details.disconnect();
-
-
-                } else {
-                    System.out.println("데이터를 불러올 수 없습니다. 에러 코드 :" + responseCode_of_Match_details);
-                }
-
-            } else {
-                System.out.println("Error Response Code: " + responseCode_of_Matchid);
-            }
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else if (user == 0) {
+            break;
+        } else {
+            System.out.println("올바른 번호를 입력하세요.");
         }
     }
 }
